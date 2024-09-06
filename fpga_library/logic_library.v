@@ -1,5 +1,5 @@
 
-//Í¬²½¸´Î»
+//åŒæ­¥å¤ä½
 module reset_sync_module(
     input       sys_clk,
     input       rst_n   ,
@@ -7,7 +7,7 @@ module reset_sync_module(
 );
 
 
-(* ASYNC = "TRUE"*)     //ÕâÑùÔÚ×ÛºÏµÄÊ±ºòvivado»á°ÑÕâÁ½¸öÍ¬²½¼Ä´æÆ÷·ÅÔÚÍ¬Ò»¸öCLBÀï
+(* ASYNC = "TRUE"*)     //è¿™æ ·åœ¨ç»¼åˆçš„æ—¶å€™vivadoä¼šæŠŠè¿™ä¸¤ä¸ªåŒæ­¥å¯„å­˜å™¨æ”¾åœ¨åŒä¸€ä¸ªCLBé‡Œ
 reg r_rst_n1,r_rst_n2;
 
 always@(posedge sys_clk)begin
@@ -21,8 +21,11 @@ end
 
 endmodule
 
+//å¼‚æ­¥å¤ä½åŒæ­¥é‡Šæ”¾
 
-//ÂıÊ±ÖÓÓòµ½¿ìÊ±ÖÓÓòµÄÍ¬²½
+
+
+//æ…¢æ—¶é’ŸåŸŸåˆ°å¿«æ—¶é’ŸåŸŸçš„åŒæ­¥
 module s2f_sync_module(
     input       i_clk1  ,
     input       i_signal,
@@ -42,7 +45,7 @@ end
 
 endmodule
 
-//ÂıÊ±ÖÓÓòµ½¿ìÊ±ÖÓÓòµÄÍ¬²½
+//æ…¢æ—¶é’ŸåŸŸåˆ°å¿«æ—¶é’ŸåŸŸçš„åŒæ­¥
 module f2s_sync_module(
     input       i_clk1  ,
     input       i_signal,
@@ -52,7 +55,7 @@ module f2s_sync_module(
 
 (* ASYNC = "TRUE"*)
 reg r_d1,r_d2;
-wire r_pos;      //Èı¸öĞÅºÅÏà»òµÄ½á¹û
+wire r_pos;      //ä¸‰ä¸ªä¿¡å·ç›¸æˆ–çš„ç»“æœ
 
 assign r_pos = r_d1 | r_d2 | i_signal;
 
