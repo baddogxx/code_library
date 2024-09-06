@@ -108,29 +108,31 @@ end
 endmodule
 
 
-//4分频
-module clock_divider_4(
-    input wire clk_in,     // 输入时钟信号
-    input wire rst_n,      // 异步复位信号，低电平有效
-    output reg clk_out     // 输出4分频时钟
+//偶数分频
+module divide_2
+(
+    input clk , // system clock 50Mhz on board
+    input rst_n, // system rst, low active
+    output reg out_clk // output signal
 );
 
-reg [1:0] counter;  // 2位计数器，用于计数时钟边沿
+parameter N = 4 ;
 
-// 异步复位的计数器逻辑
-always @(posedge clk_in or negedge rst_n) begin
-    if (!rst_n)
-        counter <= 2'b00;   // 复位时计数器清零
+reg [N/2-1:0] cnt ;
+
+
+always @ (posedge clk or negedge rst_n) begin
+    if(!rst_n) begin
+        cnt <= 0;
+        out_clk <= 0;
+    end else begin
+    if(cnt==N/2-1) begin
+        out_clk <= ~out_clk;
+        cnt <= 0;
+    end
     else
-        counter <= counter + 1'b1;  // 每个时钟上升沿计数加1
+        cnt <= cnt + 1;
+    end
 end
 
-// 产生4分频时钟信号
-always @(posedge clk_in or negedge rst_n) begin
-    if (!rst_n)
-        clk_out <= 1'b0;    // 复位时输出时钟清零
-    else if (counter == 2'b11)  // 当计数器达到3（计数从0开始）
-        clk_out <= ~clk_out;  // 翻转输出时钟信号
-end
-
-endmodule
+ endmodule
