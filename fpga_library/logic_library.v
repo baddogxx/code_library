@@ -202,3 +202,26 @@ end
 assign out_clk = out_clk1 | out_clk2;
 
 endmodule
+
+/*跨时钟域同步
+使用方法：例如：mu_dbsync #(20) pctl_sync (clk, clk_pix, dsilite_pctl, dsilite_pctl_clk_pix);
+*/
+module mu_dbsync #(
+    parameter W = 8
+) (
+    input  wire         iclk,
+    input  wire         oclk,
+    input  wire [W-1:0] in,
+    output wire [W-1:0] out
+);
+
+    xpm_cdc_array_single #(
+        .WIDTH(W)
+    ) xpm_cdc_array_single (
+        .src_clk    (iclk),
+        .dest_clk   (oclk),
+        .src_in     (in),
+        .dest_out   (out)
+    );
+
+endmodule
