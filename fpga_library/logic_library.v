@@ -225,3 +225,67 @@ module mu_dbsync #(
     );
 
 endmodule
+
+
+//数据位宽匹配模块 位宽减半
+module mu_widthadapt_2_to_1 #(
+    parameter IW = 64,
+    parameter OW = IW / 2
+) (
+    input  wire             clk,
+    input  wire             rst,
+    // Incoming port
+    input  wire [IW-1:0]    wr_data,
+    input  wire             wr_valid,
+    output wire             wr_ready,
+    // Outgoing port
+    output wire [OW-1:0]    rd_data,
+    output wire             rd_valid,
+    input  wire             rd_ready
+);
+
+    reg [IW-1:0]    fifo;
+    reg             fifo_full;
+    reg             fifo_empty;
+    
+    always @(posedge clk) begin
+        if (fifo_empty) begin
+            // Output invalid, if with valid input, fill input
+            if (wr_valid) begin
+                fifo <= wr_data;
+                fifo_empty <= 1'b0;
+                fifo_full <= 1'b1;
+            end
+        end
+        else if (fifo_full) begin
+            // Output valid, input not ready, if with valid output, shift
+            if (rd_ready) begin
+                fifo <= {fifo[OW-1:0], {OW{1'b0}}};
+                fifo_full <= 1'b0;
+            end
+        end
+        else begin
+            // Half empty, output valid, input ready only if output is ready
+            if (rd_ready && wr_valid) begin
+                fifo <= wr_data;
+                fifo_full <= 1'b1;
+            end
+            else if (rd_ready) begin
+                fifo_empty <= 1'b1;
+            end
+        end
+
+        if (rst) begin
+            fifo_full <= 1'b0;
+            fifo_empty <= 1'b1;
+        end
+    end
+
+    // RX data if fifo is empty
+    assign wr_ready = fifo_empty || (!fifo_full && rd_ready);
+    assign rd_valid = !fifo_empty;
+    assign rd_data = fifo[OW*2-1:OW];
+
+endmodule
+
+`default_nettype wire
