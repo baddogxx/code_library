@@ -288,4 +288,35 @@ module mu_widthadapt_2_to_1 #(
 
 endmodule
 
+//信号延拓
+module signal_extender #(
+    parameter N = 4 // 延拓的时钟周期数（默认 4 个周期）
+) (
+    input  wire clk,            // 系统时钟
+    input  wire rst_n,          // 系统复位（低有效）
+    input  wire i_signal,         // 原始单周期 i_signal 信号
+    output reg  extended_signal // 延拓后的 i_signal 信号
+);
+
+    reg [31:0] count; // 延拓计数器，位宽足够大以支持较大的 N
+
+    // 延拓逻辑
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            count <= 0;                // 复位计数器
+            extended_signal <= 1'b0; // 初始化为低电平
+        end else begin
+            if (i_signal) begin
+                count <= N;               // 检测到 i_signal 高电平时，加载延拓周期
+                extended_signal <= 1'b1; // 输出信号设为高电平
+            end else if (count > 0) begin
+                count <= count - 1;       // 倒计时
+                if (count == 1)           // 当计数器减到 1 时，将信号拉低
+                    extended_signal <= 1'b0;
+            end
+        end
+    end
+
+endmodule
+
 `default_nettype wire
