@@ -319,4 +319,53 @@ module signal_extender #(
 
 endmodule
 
+
+
+module signal_delay #(
+    parameter N = 4,              // 延迟的时钟周期数（默认为 4 拍）
+    parameter WIDTH = 1           // 信号的位宽（默认为 1 bit）
+) (
+    input wire sys_clk,           // 系统时钟
+    input wire sys_rst_n,         // 系统复位信号（低有效）
+    input wire [WIDTH-1:0] din,   // 输入信号
+    output wire [WIDTH-1:0] dout  // 打 N 拍后的输出信号
+);
+
+    // 延迟寄存器数组
+    reg [WIDTH-1:0] delay_pipeline [0:N-1];
+
+    integer i;
+
+    always @(posedge sys_clk or negedge sys_rst_n) begin
+        if (!sys_rst_n) begin
+            // 复位所有寄存器
+            for (i = 0; i < N; i = i + 1) begin
+                delay_pipeline[i] <= {WIDTH{1'b0}};
+            end
+        end else begin
+            // 数据沿流水线逐级推进
+            delay_pipeline[0] <= din;  // 第一级寄存器存储输入信号
+            for (i = 1; i < N; i = i + 1) begin
+                delay_pipeline[i] <= delay_pipeline[i-1];
+            end
+        end
+    end
+
+    // 输出信号为延迟链末端的寄存器值
+    assign dout = delay_pipeline[N-1];
+
+endmodule
+
+//     // 实例化 signal_delay 模块
+// signal_delay #(
+//     .N(5),                  // 延迟 5 个时钟周期
+//     .WIDTH(4)               // 信号位宽为 4-bit
+// ) delay_inst (
+//     .sys_clk(sys_clk),      // 系统时钟
+//     .sys_rst_n(sys_rst_n),  // 系统复位
+//     .din(din),              // 输入信号
+//     .dout(dout)             // 延迟后的输出信号
+// );
+
+
 `default_nettype wire
