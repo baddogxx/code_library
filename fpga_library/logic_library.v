@@ -318,7 +318,16 @@ module signal_extender #(
     end
 
 endmodule
-
+    // 实例化 signal_delay 模块
+    signal_delay #(
+        .N(5),                  // 延迟 5 个时钟周期
+        .WIDTH(4)               // 输入信号位宽为 4-bit
+    ) delay_inst (
+        .sys_clk(sys_clk),      // 连接系统时钟
+        .sys_rst_n(sys_rst_n),  // 连接系统复位
+        .din(din),              // 输入信号
+        .dout(dout)             // 延迟后的输出信号
+    );
 
 
 module signal_delay #(
