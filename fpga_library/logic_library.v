@@ -376,5 +376,82 @@ endmodule
 //     .dout(dout)             // 延迟后的输出信号
 // );
 
+//状态机模板
+module rhs_read (
+    input           sys_clk     ,
+    input           sys_rst_n   ,
+
+    input           i_read_req  ,
+    input  [31:0]   i_read_addr ,
+
+    output [31:0]   o_read_data ,
+    output          o_read_done
+);
+
+ // 状态定义
+typedef enum reg [1:0] {
+    IDLE    = 2'b00,
+    START   = 2'b01,
+    READ    = 2'b10,
+    DONE    = 2'b11
+} state_t;
+    
+state_t current_state, next_state;
+
+always @(posedge sys_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n)
+        current_state <= IDLE;
+    else
+        current_state <= next_state;
+end
+
+always @(*) begin
+    case (current_state)
+        IDLE: begin
+            if (i_read_req)       
+                next_state = START;
+            else
+                next_state = IDLE;
+        end
+        START: begin
+            next_state = READ;
+        end
+        READ: begin
+            if ()
+                next_state = DONE;
+            else
+                next_state = READ;
+        end  
+        DONE: begin
+            next_state = IDLE;
+        end
+        default: next_state = IDLE;
+    endcase
+end
+
+
+always @(posedge sys_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n) begin
+
+    end else begin
+        case (current_state)
+            IDLE: begin
+
+            end
+            START: begin
+
+            end
+            READ: begin
+
+                
+            end
+            DONE: begin
+
+            end
+        endcase
+    end
+end
+
+endmodule
 
 `default_nettype wire
