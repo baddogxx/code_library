@@ -387,14 +387,13 @@ module rhs_read (
     output reg        o_read_done
 );
 
-typedef enum reg [1:0] {
-    IDLE    = 2'b00,
-    START   = 2'b01,
-    READ    = 2'b10,
-    DONE    = 2'b11
-} state_t;
+// 状态定义
+reg [1:0] current_state, next_state;
 
-state_t current_state, next_state;
+localparam IDLE  = 2'b00;
+localparam START = 2'b01;
+localparam READ  = 2'b10;
+localparam DONE  = 2'b11;
 
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
@@ -447,6 +446,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
 end
 
 endmodule
+
 
 
 `default_nettype wire
