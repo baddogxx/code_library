@@ -387,59 +387,54 @@ module rhs_read (
     output reg        o_read_done
 );
 
-// 状态定义
+/***********************************************/
 reg [1:0] current_state, next_state;
-
 localparam IDLE  = 2'b00;
-localparam START = 2'b01;
+localparam WRITE = 2'b01;
 localparam READ  = 2'b10;
 localparam DONE  = 2'b11;
-
 always @(posedge sys_clk or negedge sys_rst_n) begin
-    if (!sys_rst_n)
-        current_state <= IDLE;
-    else
-        current_state <= next_state;
-end
-
+    if (!sys_rst_n) current_state <= IDLE;
+    else            current_state <= next_state; end
+/***********************************************/
 always @(*) begin
     case (current_state)
         IDLE: begin
-            if (i_read_req)       
-                next_state = START;
-            else
-                next_state = IDLE;
-        end
-        START: begin
-            next_state = READ;
-        end
+            if (1)       
+                next_state = WRITE; else next_state = IDLE;  end
+        WRITE: begin
+            if (1)       
+                next_state = READ;  else next_state = WRITE; end
         READ: begin
-            next_state = DONE;
-        end  
+            if (1)       
+                next_state = DONE;  else next_state = READ;  end  
         DONE: begin
-            next_state = IDLE;
-        end
+            if (1)       
+                next_state = IDLE;  else next_state = DONE;  end
         default: next_state = IDLE;
     endcase
 end
 
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
-        o_read_data <= 32'b0;
-        o_read_done <= 0;
+        addr_r <='d0;
+        dout_r <='d0;
+        en_r   <='d1;
+        wen_r  <='d0;
+        din_r  <='d0;
     end else begin
         case (current_state)
             IDLE: begin
-                o_read_done <= 0;
+               
             end
-            START: begin
-                o_read_done <= 0;
+            WRITE: begin
+                
             end
             READ: begin
-                o_read_data <= i_read_addr;  
+                
             end
             DONE: begin
-                o_read_done <= 1;
+                
             end
         endcase
     end
