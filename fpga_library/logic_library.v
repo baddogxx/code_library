@@ -417,11 +417,7 @@ end
 
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
-        addr_r <='d0;
-        dout_r <='d0;
-        en_r   <='d1;
-        wen_r  <='d0;
-        din_r  <='d0;
+
     end else begin
         case (current_state)
             IDLE: begin
