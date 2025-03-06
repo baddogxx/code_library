@@ -78,7 +78,7 @@ end
 
 endmodule
 
-//慢时钟域到快时钟域的同步
+//快时钟域到慢时钟域的同步
 module f2s_sync_module(
     input       i_clk1  ,
     input       i_signal,
